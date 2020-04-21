@@ -14,7 +14,6 @@
 
   // canvas event handlers
   canvas.onmousedown = function (e) {
-    console.log("hello", e);
     drawInProgress = true;
 
     currentRectangle = new Rectangle;
@@ -34,8 +33,6 @@
       y = currentRectangle.topLeft.y;
 
     currentRectangle.bottomRight = new Point(x, y);
-    // currentRectangle.bottomLeft = new Point(currentRectangle.topLeft.x, y);
-    // currentRectangle.topRight = new Point(x, currentRectangle.topLeft.y);
     currentRectangle.fromTopLeftBottomRight(currentRectangle.topLeft, currentRectangle.bottomRight);
 
     drawRectangle(currentRectangle);
@@ -43,7 +40,6 @@
     saveCanvasState();
   };
   canvas.onmousemove = function (e) {
-    //console.log("onmousemove", e);
     var x = e.clientX - canvas.offsetLeft;
     var y = e.clientY - canvas.offsetTop;
     var point = new Point(x, y);
@@ -105,16 +101,18 @@
     context.putImageData(previousCanvasState, 0, 0);
   }
 
-  //
-  // object prototypes
-  //
-
+  /*
+  * Rectangle object.
+  */
   function Rectangle() {
     this.topLeft = new Point(0, 0);
     this.bottomLeft = new Point(0, 0);
     this.topRight = new Point(0, 0);
     this.bottomRight = new Point(0, 0);
 
+    /* 
+    * Create a rectange object from the top left and bottom right points.
+    */
     this.fromTopLeftBottomRight = function(topLeft, bottomRight) {
       this.topLeft = topLeft;
       this.bottomRight = bottomRight;
@@ -123,6 +121,9 @@
     }
   }
 
+  /*
+  * Point object.
+  */
   function Point(x, y) {
     this.x = x;
     this.y = y;
