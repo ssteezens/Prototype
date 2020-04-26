@@ -5,6 +5,7 @@
             html, body {
                 width:100vh;
                 height:100vh;
+                overflow:hidden;
             }
             body {
                 background:#d9d9d9;
@@ -15,13 +16,38 @@
                 background: #e6e6e6;
                 border: 1px solid black;
             }
+            button {
+                padding:5px;
+            }
+
+            #CanvasControls {
+                width: 80vh;
+            }
+            #InfoDisplay {
+                display:inline-block;
+            }
+            #Buttons {
+                display:inline-block;
+            }
         </style>
     </head>
     <body>
+        <!-- Main Drawing Canvas -->
         <canvas id="TheCanvas">
-
         </canvas>
-        <p id="InfoDisplay"></p>
+        <!-- Canvas Controls-->
+        <div id="CanvasControls">
+            
+            <!-- Info Display-->
+            <p id="InfoDisplay"></p>
+            
+            <!-- Canvas Control Buttons -->
+            <div id="Buttons">
+                <button>Hello</button>
+                <button id="UndoButton">Undo</button>
+                <button id="RedoButton">Redo</button>
+            </div>
+        </div>
     </body>
     <foot>
         <script src="main.js"></script>

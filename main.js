@@ -1,18 +1,30 @@
 (function () {
   console.log("starting");
 
-  var drawInProgress = false;
-  var currentRectangle = new Rectangle;
+  // elements
   var canvas = document.getElementById("TheCanvas");
   var context = canvas.getContext("2d");
   var infoDisplay = document.getElementById("InfoDisplay");
+  var undoButton = document.getElementById("UndoButton");
+  var redoButton = document.getElementById("RedoButton");
+
+  // locals
+  var drawInProgress = false;
+  var currentRectangle = new Rectangle;
+  var drawHistory = [];
+  var currentCanvasState = context.getImageData(0, 0, canvas.width, canvas.height);
   
   canvas.width = canvas.offsetWidth;
   canvas.height = canvas.offsetHeight;
 
-  var previousCanvasState = context.getImageData(0, 0, canvas.width, canvas.height);
+  saveCanvasState();
 
-  // canvas event handlers
+  //drawGridLines(20);
+
+  // event handlers
+  /*
+  * Canvas on mouse down event handler.
+  */
   canvas.onmousedown = function (e) {
     drawInProgress = true;
 
@@ -21,6 +33,9 @@
 
     drawLine(currentRectangle.topLeft.x, currentRectangle.topLeft.y, 10, 100);
   };
+  /*
+  * Canvas on mouse up event handler.
+  */
   canvas.onmouseup = function (e) {
     drawInProgress = false;
 
@@ -36,9 +51,11 @@
     currentRectangle.fromTopLeftBottomRight(currentRectangle.topLeft, currentRectangle.bottomRight);
 
     drawRectangle(currentRectangle);
-
     saveCanvasState();
   };
+  /*
+  * Canvas on mouse move event handler.
+  */
   canvas.onmousemove = function (e) {
     var x = e.clientX - canvas.offsetLeft;
     var y = e.clientY - canvas.offsetTop;
@@ -55,11 +72,24 @@
     currentRectangle.fromTopLeftBottomRight(currentRectangle.topLeft, currentRectangle.bottomRight);
 
     if (drawInProgress) {
-      restorePreviousCanvasState();
+      restoreCurrentCanvasState();
+
       drawRectangle(currentRectangle);
     }
 
     infoDisplay.innerHTML = "X: " + point.x + " Y: " + point.y;
+  };
+  /*
+  *   Undo button on click event handler.
+  */
+  undoButton.onclick = function(e) {
+    restorePreviousCanvasState();
+  };
+  /*
+  *  Redo button on click event handler.
+  */
+  redoButton.onclick = function(e) {
+
   };
 
   /*
@@ -87,17 +117,48 @@
     context.closePath();
   }
 
+  function drawGridLines(cellSize) {
+    saveCanvasState();
+
+    // draw veritcal lines
+    for(var i = 0; i < canvas.width; i += cellSize){
+      context.moveTo(i, 0);
+      context.lineTo(i, canvas.height);
+    }
+    // draw horizontal lines
+    for(var i = 0; i < canvas.height; i += cellSize) {
+      context.moveTo(0, i);
+      context.lineTo(canvas.width, i);
+    }
+
+    context.stroke();
+
+    saveCanvasState();
+  }
+
   /*
   * Save the current canvas state.
   */
   function saveCanvasState() {
-    previousCanvasState = context.getImageData(0, 0, canvas.width, canvas.height);
+    currentCanvasState = context.getImageData(0, 0, canvas.width, canvas.height);
+
+    drawHistory.push(currentCanvasState);
+  }
+
+  /*
+  *  Restore the canvas state to the current desired state to clear out any 
+  *  in progress draw's.
+  */
+  function restoreCurrentCanvasState() {
+    context.putImageData(currentCanvasState, 0, 0);
   }
 
   /*
   * Restore to previous canvas state.
   */
   function restorePreviousCanvasState() {
+    var previousCanvasState = drawHistory.pop();
+
     context.putImageData(previousCanvasState, 0, 0);
   }
 
