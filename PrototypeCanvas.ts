@@ -8,7 +8,7 @@ export class PrototypeCanvas {
     private currentRectangle: Rectangle; 
     private mouseDownPoint: Point;
     private mouseUpPoint: Point;
-    private drawHistory: ImageData[];
+    private drawHistory: ImageData[] = [];
     private currentCanvasState: ImageData;
 
     /**
@@ -19,9 +19,9 @@ export class PrototypeCanvas {
         this.canvas = document.getElementById('TheCanvas') as HTMLCanvasElement;
         this.context = this.canvas.getContext("2d");   
         this.currentRectangle = new Rectangle();
-
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
+        this.currentCanvasState = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 
         this.canvas.addEventListener("mousedown", this.mouseDownEventHandler);
         this.canvas.addEventListener("mouseup", this.mouseUpEventHandler);
@@ -70,6 +70,10 @@ export class PrototypeCanvas {
         this.saveCanvasState();
     }
 
+    /**
+     * Draws a rectangle on the canvas. 
+     * @param rectangle The rectangle to draw.
+     */    
     private drawRectangle(rectangle: Rectangle) {
         // draw left line
         this.drawLine(rectangle.topLeft, rectangle.bottomLeft);
@@ -81,6 +85,11 @@ export class PrototypeCanvas {
         this.drawLine(rectangle.bottomRight, rectangle.topRight);
     }
 
+    /**
+     * Draws a line connecting two points.
+     * @param pointOne The point to draw from.
+     * @param pointTwo The point to draw to.
+     */
     private drawLine(pointOne: Point, pointTwo: Point) {
         this.context.beginPath();
         this.context.moveTo(pointOne.x, pointOne.y);
@@ -97,6 +106,5 @@ export class PrototypeCanvas {
 
         this.drawHistory.push(this.currentCanvasState);
     }
-
 }
 
