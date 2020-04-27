@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "outDir": "out",
+      "module": "system",
+      "sourceMap": true,
+      "lib": [
+        "dom",
+        "es2015",
+        "es5",
+        "es6"
+      ]
+    }
+  }

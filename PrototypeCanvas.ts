@@ -1,0 +1,102 @@
+import { Point } from "./Point";
+import { Rectangle } from "./Rectangle";
+
+export class PrototypeCanvas {
+    private canvas: HTMLCanvasElement;
+    private context: CanvasRenderingContext2D;
+    private drawInProgress: boolean;
+    private currentRectangle: Rectangle; 
+    private mouseDownPoint: Point;
+    private mouseUpPoint: Point;
+    private drawHistory: ImageData[];
+    private currentCanvasState: ImageData;
+
+    /**
+     * Default constructor.  Initializes the canvas and context.
+     */
+    constructor() {
+        console.log("hello");
+        this.canvas = document.getElementById('TheCanvas') as HTMLCanvasElement;
+        this.context = this.canvas.getContext("2d");   
+        this.currentRectangle = new Rectangle();
+
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+
+        this.canvas.addEventListener("mousedown", this.mouseDownEventHandler);
+        this.canvas.addEventListener("mouseup", this.mouseUpEventHandler);
+        this.canvas.addEventListener("mousemove", this.mouseMoveEventHandler);
+    }
+
+    /**  
+     * Event handler for canvas mouse down event.
+     */
+    private mouseDownEventHandler = (e: MouseEvent) =>  {
+        this.drawInProgress = true;
+
+        let x = e.clientX - this.canvas.offsetLeft;
+        let y = e.clientY - this.canvas.offsetTop;
+
+        this.mouseDownPoint = new Point(x, y);
+    }
+
+    /**  
+     * Event handler for canvas mouse move event.
+     */
+    private mouseMoveEventHandler = (e: MouseEvent) => {
+        let x = e.clientX - this.canvas.offsetLeft;
+        let y = e.clientY - this.canvas.offsetTop;
+        
+        this.mouseUpPoint = new Point(x, y);
+        this.currentRectangle = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
+
+        if(this.drawInProgress){
+            this.context.putImageData(this.currentCanvasState, 0, 0);
+
+            this.drawRectangle(this.currentRectangle);
+        }
+    }
+
+    /**  
+     * Event handler for canvas mouse up event.
+     */
+    private mouseUpEventHandler = (e: MouseEvent) => {
+        let x = e.clientX - this.canvas.offsetLeft;
+        let y = e.clientY - this.canvas.offsetTop;
+        
+        this.mouseUpPoint = new Point(x, y);
+
+        this.currentRectangle = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
+        this.saveCanvasState();
+    }
+
+    private drawRectangle(rectangle: Rectangle) {
+        // draw left line
+        this.drawLine(rectangle.topLeft, rectangle.bottomLeft);
+        // draw top line
+        this.drawLine(rectangle.topLeft, rectangle.topRight);
+        // draw bottom line
+        this.drawLine(rectangle.bottomLeft, rectangle.bottomRight);
+        // draw right line
+        this.drawLine(rectangle.bottomRight, rectangle.topRight);
+    }
+
+    private drawLine(pointOne: Point, pointTwo: Point) {
+        this.context.beginPath();
+        this.context.moveTo(pointOne.x, pointOne.y);
+        this.context.lineTo(pointTwo.x, pointTwo.y);
+        this.context.stroke();
+        this.context.closePath();
+    }
+
+    /**
+     * Saves the current canvas state.
+     */
+    private saveCanvasState() {
+        this.context.putImageData(this.currentCanvasState, 0, 0);
+
+        this.drawHistory.push(this.currentCanvasState);
+    }
+
+}
+
