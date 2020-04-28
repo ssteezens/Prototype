@@ -1,11 +1,12 @@
 import { Point } from "./Point";
 import { Rectangle } from "./Rectangle";
+import { MorphingPolygon } from "./MorphingPolygon";
 
 export class PrototypeCanvas {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private drawInProgress: boolean;
-    private currentRectangle: Rectangle; 
+    private currentPolygon: MorphingPolygon; 
     private mouseDownPoint: Point;
     private mouseUpPoint: Point;
     private drawHistory: ImageData[] = [];
@@ -18,7 +19,7 @@ export class PrototypeCanvas {
         console.log("hello");
         this.canvas = document.getElementById('TheCanvas') as HTMLCanvasElement;
         this.context = this.canvas.getContext("2d");   
-        this.currentRectangle = new Rectangle();
+        this.currentPolygon = new Rectangle();
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
         this.currentCanvasState = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -48,12 +49,12 @@ export class PrototypeCanvas {
         let y = e.clientY - this.canvas.offsetTop;
         
         this.mouseUpPoint = new Point(x, y);
-        this.currentRectangle = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
+        this.currentPolygon = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
 
         if(this.drawInProgress){
             this.context.putImageData(this.currentCanvasState, 0, 0);
 
-            this.drawRectangle(this.currentRectangle);
+            this.drawPolygon(this.currentPolygon);
         }
     }
 
@@ -66,25 +67,25 @@ export class PrototypeCanvas {
         let y = e.clientY - this.canvas.offsetTop;
         
         this.mouseUpPoint = new Point(x, y);
-        this.currentRectangle = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
+        this.currentPolygon = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
 
-        this.drawRectangle(this.currentRectangle);
+        this.drawPolygon(this.currentPolygon);
         this.saveCanvasState();
     }
 
     /**
      * Draws a rectangle on the canvas. 
-     * @param rectangle The rectangle to draw.
+     * @param polygon The polygon to draw.
      */    
-    private drawRectangle(rectangle: Rectangle) {
+    private drawPolygon(polygon: MorphingPolygon) {
         // draw left line
-        this.drawLine(rectangle.topLeft, rectangle.bottomLeft);
+        this.drawLine(polygon.topLeft, polygon.bottomLeft);
         // draw top line
-        this.drawLine(rectangle.topLeft, rectangle.topRight);
+        this.drawLine(polygon.topLeft, polygon.topRight);
         // draw bottom line
-        this.drawLine(rectangle.bottomLeft, rectangle.bottomRight);
+        this.drawLine(polygon.bottomLeft, polygon.bottomRight);
         // draw right line
-        this.drawLine(rectangle.bottomRight, rectangle.topRight);
+        this.drawLine(polygon.bottomRight, polygon.topRight);
     }
 
     /**
