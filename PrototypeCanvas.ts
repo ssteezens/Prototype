@@ -61,12 +61,14 @@ export class PrototypeCanvas {
      * Event handler for canvas mouse up event.
      */
     private mouseUpEventHandler = (e: MouseEvent) => {
+        this.drawInProgress = false;
         let x = e.clientX - this.canvas.offsetLeft;
         let y = e.clientY - this.canvas.offsetTop;
         
         this.mouseUpPoint = new Point(x, y);
-
         this.currentRectangle = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
+
+        this.drawRectangle(this.currentRectangle);
         this.saveCanvasState();
     }
 
@@ -91,6 +93,8 @@ export class PrototypeCanvas {
      * @param pointTwo The point to draw to.
      */
     private drawLine(pointOne: Point, pointTwo: Point) {
+        if(pointOne == undefined || pointTwo == undefined) 
+            return;
         this.context.beginPath();
         this.context.moveTo(pointOne.x, pointOne.y);
         this.context.lineTo(pointTwo.x, pointTwo.y);
@@ -102,7 +106,7 @@ export class PrototypeCanvas {
      * Saves the current canvas state.
      */
     private saveCanvasState() {
-        this.context.putImageData(this.currentCanvasState, 0, 0);
+        this.currentCanvasState = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 
         this.drawHistory.push(this.currentCanvasState);
     }
