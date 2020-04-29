@@ -1,6 +1,7 @@
 import { Point } from "./Point";
 import { Rectangle } from "./Rectangle";
 import { MorphingPolygon } from "./MorphingPolygon";
+import { CanvasHistoryManager } from "./CanvasHistory";
 
 export class PrototypeCanvas {
     private canvas: HTMLCanvasElement;
@@ -9,8 +10,9 @@ export class PrototypeCanvas {
     private currentPolygon: MorphingPolygon; 
     private mouseDownPoint: Point;
     private mouseUpPoint: Point;
-    private drawHistory: ImageData[] = [];
-    private currentCanvasState: ImageData;
+    private canvasHistory: CanvasHistoryManager;
+    private undoButton: HTMLButtonElement;
+    private redoButton: HTMLButtonElement;
 
     /**
      * Default constructor.  Initializes the canvas and context.
@@ -19,14 +21,34 @@ export class PrototypeCanvas {
         console.log("hello");
         this.canvas = document.getElementById('TheCanvas') as HTMLCanvasElement;
         this.context = this.canvas.getContext("2d");   
-        this.currentPolygon = new Rectangle();
+        this.currentPolygon = new MorphingPolygon();
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
-        this.currentCanvasState = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        this.canvasHistory = new CanvasHistoryManager(this.context);
+        this.canvasHistory.add(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
 
         this.canvas.addEventListener("mousedown", this.mouseDownEventHandler);
         this.canvas.addEventListener("mouseup", this.mouseUpEventHandler);
         this.canvas.addEventListener("mousemove", this.mouseMoveEventHandler);
+
+        this.undoButton = document.getElementById("UndoButton") as HTMLButtonElement;
+        this.redoButton = document.getElementById("RedoButton") as HTMLButtonElement;
+        this.undoButton.addEventListener("click", this.undoButtonClickEventHandler);
+        this.redoButton.addEventListener("click", this.redoButtonClickEventHandler);
+    }
+
+    /**
+     * Event handler for the undo button. Calls the canvas history to undo the last action.
+     */
+    private undoButtonClickEventHandler = (e: Event) => {
+        this.canvasHistory.undo();
+    }
+
+    /**
+     * Event handler for the redo button. Calls the canvas hsitory to redo any undone action.
+     */
+    private redoButtonClickEventHandler = (e: Event) => {
+        this.canvasHistory.redo();
     }
 
     /**  
@@ -49,10 +71,10 @@ export class PrototypeCanvas {
         let y = e.clientY - this.canvas.offsetTop;
         
         this.mouseUpPoint = new Point(x, y);
-        this.currentPolygon = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
+        this.currentPolygon = new MorphingPolygon(this.mouseDownPoint, this.mouseUpPoint);
 
         if(this.drawInProgress){
-            this.context.putImageData(this.currentCanvasState, 0, 0);
+            this.context.putImageData(this.canvasHistory.getCurrentState(), 0, 0);
 
             this.drawPolygon(this.currentPolygon);
         }
@@ -67,7 +89,7 @@ export class PrototypeCanvas {
         let y = e.clientY - this.canvas.offsetTop;
         
         this.mouseUpPoint = new Point(x, y);
-        this.currentPolygon = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
+        this.currentPolygon = new MorphingPolygon(this.mouseDownPoint, this.mouseUpPoint);
 
         this.drawPolygon(this.currentPolygon);
         this.saveCanvasState();
@@ -107,9 +129,7 @@ export class PrototypeCanvas {
      * Saves the current canvas state.
      */
     private saveCanvasState() {
-        this.currentCanvasState = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-
-        this.drawHistory.push(this.currentCanvasState);
+        this.canvasHistory.add(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
     }
 }
 
