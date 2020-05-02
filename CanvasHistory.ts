@@ -24,7 +24,7 @@ export class CanvasHistoryManager {
      * Redo the last canvas draw.
      */
     public redo() {
-        if(this.currentStateIndex < this.drawHistory.length)
+        if(this.currentStateIndex < this.drawHistory.length - 1)
             this.currentStateIndex++;
 
         this.canvasContext.putImageData(this.getCurrentState(), 0, 0);

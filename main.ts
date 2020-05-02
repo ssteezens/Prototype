@@ -1,4 +1,10 @@
 import { PrototypeCanvas } from "./ProtoTypeCanvas";
+import { DraggableElement } from "./DraggableElement";
 
-// look into browserify, parceljs, other types of loaders
 var prototypeCanvas = new PrototypeCanvas();
+var draggableElements = document.getElementsByClassName('draggable');
+
+for(var i = 0; i < draggableElements.length; i++){
+    var element = draggableElements[i] as HTMLElement;
+    var draggable = new DraggableElement(element); 
+}

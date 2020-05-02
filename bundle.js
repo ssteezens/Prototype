@@ -26,7 +26,7 @@ System.register("CanvasHistory", [], function (exports_1, context_1) {
                  * Redo the last canvas draw.
                  */
                 CanvasHistoryManager.prototype.redo = function () {
-                    if (this.currentStateIndex < this.drawHistory.length)
+                    if (this.currentStateIndex < this.drawHistory.length - 1)
                         this.currentStateIndex++;
                     this.canvasContext.putImageData(this.getCurrentState(), 0, 0);
                 };
@@ -74,9 +74,9 @@ System.register("Point", [], function (exports_2, context_2) {
         }
     };
 });
-System.register("MorphingPolygon", ["Point"], function (exports_3, context_3) {
+System.register("DraggableElement", ["Point"], function (exports_3, context_3) {
     "use strict";
-    var Point_1, MorphingPolygon;
+    var Point_1, DraggableElement;
     var __moduleName = context_3 && context_3.id;
     return {
         setters: [
@@ -85,51 +85,49 @@ System.register("MorphingPolygon", ["Point"], function (exports_3, context_3) {
             }
         ],
         execute: function () {
-            MorphingPolygon = /** @class */ (function () {
+            DraggableElement = /** @class */ (function () {
                 /**
-                 *  Creates a rectangle from two points.
+                 *
                  */
-                function MorphingPolygon(point1, point2) {
-                    if (point1 === void 0) { point1 = new Point_1.Point(0, 0); }
-                    if (point2 === void 0) { point2 = new Point_1.Point(0, 0); }
-                    // point 1 is topleft and point 2 is bottom right
-                    if (point1.x < point2.x && point1.y < point2.y) {
-                        this.topLeft = point1;
-                        this.bottomRight = point2;
-                        this.bottomLeft = new Point_1.Point(this.topLeft.x, this.bottomRight.y);
-                        this.topRight = new Point_1.Point(this.bottomRight.x, this.topLeft.y);
-                    }
-                    // point 1 is bottom left and point 2 top right
-                    if (point1.x < point2.x && point1.y > point2.y) {
-                        this.bottomLeft = point1;
-                        this.topRight = point2;
-                        this.topLeft = new Point_1.Point(this.bottomLeft.x, this.topRight.y);
-                        this.bottomRight = new Point_1.Point(this.bottomLeft.y, this.topRight.x);
-                    }
-                    // point 1 is top right and point 2 is bottom left
-                    if (point1.x > point2.x && point1.y < point2.y) {
-                        this.topRight = point1;
-                        this.bottomLeft = point2;
-                        this.topLeft = new Point_1.Point(this.bottomLeft.x, this.topRight.y);
-                        this.bottomRight = new Point_1.Point(this.bottomLeft.y, this.topRight.x);
-                    }
-                    // point 1 is bottom right and point 2 is top left
-                    if (point1.x > point2.x && point1.y > point2.y) {
-                        this.bottomRight = point1;
-                        this.topLeft = point2;
-                        this.bottomLeft = new Point_1.Point(this.topLeft.x, this.bottomRight.y);
-                        this.topRight = new Point_1.Point(this.bottomRight.x, this.topLeft.y);
-                    }
+                function DraggableElement(element) {
+                    var _this = this;
+                    this.mouseDownEventHandler = function (e) {
+                        _this.isDragging = true;
+                        var x = e.clientX;
+                        var y = e.clientY;
+                        _this.mouseDownPoint = new Point_1.Point(x, y);
+                    };
+                    this.mouseUpEventHandler = function (e) {
+                        _this.isDragging = false;
+                    };
+                    this.mouseMoveEventHandler = function (e) {
+                        if (_this.isDragging)
+                            _this.dragEventHandler(e);
+                    };
+                    this.dragEventHandler = function (e) {
+                        var x = e.clientX;
+                        var y = e.clientY;
+                        var deltaY = 0;
+                        var deltaX = 0;
+                        var currentPoint = new Point_1.Point(x, y);
+                        _this.element.style.top = currentPoint.y + "px";
+                        _this.element.style.left = currentPoint.x + "px";
+                    };
+                    this.element = element;
+                    this.isDragging = false;
+                    this.element.addEventListener("mousedown", this.mouseDownEventHandler);
+                    document.addEventListener("mouseup", this.mouseUpEventHandler);
+                    document.addEventListener("mousemove", this.mouseMoveEventHandler);
                 }
-                return MorphingPolygon;
+                return DraggableElement;
             }());
-            exports_3("MorphingPolygon", MorphingPolygon);
+            exports_3("DraggableElement", DraggableElement);
         }
     };
 });
-System.register("Rectangle", ["Point"], function (exports_4, context_4) {
+System.register("MorphingPolygon", ["Point"], function (exports_4, context_4) {
     "use strict";
-    var Point_2, Rectangle;
+    var Point_2, MorphingPolygon;
     var __moduleName = context_4 && context_4.id;
     return {
         setters: [
@@ -138,11 +136,11 @@ System.register("Rectangle", ["Point"], function (exports_4, context_4) {
             }
         ],
         execute: function () {
-            Rectangle = /** @class */ (function () {
+            MorphingPolygon = /** @class */ (function () {
                 /**
                  *  Creates a rectangle from two points.
                  */
-                function Rectangle(point1, point2) {
+                function MorphingPolygon(point1, point2) {
                     if (point1 === void 0) { point1 = new Point_2.Point(0, 0); }
                     if (point2 === void 0) { point2 = new Point_2.Point(0, 0); }
                     // point 1 is topleft and point 2 is bottom right
@@ -174,20 +172,73 @@ System.register("Rectangle", ["Point"], function (exports_4, context_4) {
                         this.topRight = new Point_2.Point(this.bottomRight.x, this.topLeft.y);
                     }
                 }
-                return Rectangle;
+                return MorphingPolygon;
             }());
-            exports_4("Rectangle", Rectangle);
+            exports_4("MorphingPolygon", MorphingPolygon);
         }
     };
 });
-System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"], function (exports_5, context_5) {
+System.register("Rectangle", ["Point"], function (exports_5, context_5) {
     "use strict";
-    var Point_3, MorphingPolygon_1, CanvasHistory_1, PrototypeCanvas;
+    var Point_3, Rectangle;
     var __moduleName = context_5 && context_5.id;
     return {
         setters: [
             function (Point_3_1) {
                 Point_3 = Point_3_1;
+            }
+        ],
+        execute: function () {
+            Rectangle = /** @class */ (function () {
+                /**
+                 *  Creates a rectangle from two points.
+                 */
+                function Rectangle(point1, point2) {
+                    if (point1 === void 0) { point1 = new Point_3.Point(0, 0); }
+                    if (point2 === void 0) { point2 = new Point_3.Point(0, 0); }
+                    // point 1 is topleft and point 2 is bottom right
+                    if (point1.x < point2.x && point1.y < point2.y) {
+                        this.topLeft = point1;
+                        this.bottomRight = point2;
+                        this.bottomLeft = new Point_3.Point(this.topLeft.x, this.bottomRight.y);
+                        this.topRight = new Point_3.Point(this.bottomRight.x, this.topLeft.y);
+                    }
+                    // point 1 is bottom left and point 2 top right
+                    if (point1.x < point2.x && point1.y > point2.y) {
+                        this.bottomLeft = point1;
+                        this.topRight = point2;
+                        this.topLeft = new Point_3.Point(this.bottomLeft.x, this.topRight.y);
+                        this.bottomRight = new Point_3.Point(this.bottomLeft.y, this.topRight.x);
+                    }
+                    // point 1 is top right and point 2 is bottom left
+                    if (point1.x > point2.x && point1.y < point2.y) {
+                        this.topRight = point1;
+                        this.bottomLeft = point2;
+                        this.topLeft = new Point_3.Point(this.bottomLeft.x, this.topRight.y);
+                        this.bottomRight = new Point_3.Point(this.bottomLeft.y, this.topRight.x);
+                    }
+                    // point 1 is bottom right and point 2 is top left
+                    if (point1.x > point2.x && point1.y > point2.y) {
+                        this.bottomRight = point1;
+                        this.topLeft = point2;
+                        this.bottomLeft = new Point_3.Point(this.topLeft.x, this.bottomRight.y);
+                        this.topRight = new Point_3.Point(this.bottomRight.x, this.topLeft.y);
+                    }
+                }
+                return Rectangle;
+            }());
+            exports_5("Rectangle", Rectangle);
+        }
+    };
+});
+System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"], function (exports_6, context_6) {
+    "use strict";
+    var Point_4, MorphingPolygon_1, CanvasHistory_1, PrototypeCanvas;
+    var __moduleName = context_6 && context_6.id;
+    return {
+        setters: [
+            function (Point_4_1) {
+                Point_4 = Point_4_1;
             },
             function (MorphingPolygon_1_1) {
                 MorphingPolygon_1 = MorphingPolygon_1_1;
@@ -203,6 +254,22 @@ System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"]
                  */
                 function PrototypeCanvas() {
                     var _this = this;
+                    /**
+                     * Event handler for the key down event.  Manages keyboard shortcuts
+                     */
+                    this.keyboardDownEventHandler = function (e) {
+                        if (e.keyCode == 90 && e.ctrlKey)
+                            _this.canvasHistory.undo();
+                        if (e.keyCode == 89 && e.ctrlKey)
+                            _this.canvasHistory.redo();
+                    };
+                    /**
+                     * Event handler
+                     */
+                    this.saveButtonClickEventHandler = function (e) {
+                        var image = _this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+                        window.location.href = image;
+                    };
                     /**
                      * Event handler for the undo button. Calls the canvas history to undo the last action.
                      */
@@ -222,7 +289,7 @@ System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"]
                         _this.drawInProgress = true;
                         var x = e.clientX - _this.canvas.offsetLeft;
                         var y = e.clientY - _this.canvas.offsetTop;
-                        _this.mouseDownPoint = new Point_3.Point(x, y);
+                        _this.mouseDownPoint = new Point_4.Point(x, y);
                     };
                     /**
                      * Event handler for canvas mouse move event.
@@ -230,8 +297,9 @@ System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"]
                     this.mouseMoveEventHandler = function (e) {
                         var x = e.clientX - _this.canvas.offsetLeft;
                         var y = e.clientY - _this.canvas.offsetTop;
-                        _this.mouseUpPoint = new Point_3.Point(x, y);
+                        _this.mouseUpPoint = new Point_4.Point(x, y);
                         _this.currentPolygon = new MorphingPolygon_1.MorphingPolygon(_this.mouseDownPoint, _this.mouseUpPoint);
+                        _this.infoDisplay.innerText = "X: " + x + " Y: " + y;
                         if (_this.drawInProgress) {
                             _this.context.putImageData(_this.canvasHistory.getCurrentState(), 0, 0);
                             _this.drawPolygon(_this.currentPolygon);
@@ -244,13 +312,14 @@ System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"]
                         _this.drawInProgress = false;
                         var x = e.clientX - _this.canvas.offsetLeft;
                         var y = e.clientY - _this.canvas.offsetTop;
-                        _this.mouseUpPoint = new Point_3.Point(x, y);
+                        _this.mouseUpPoint = new Point_4.Point(x, y);
                         _this.currentPolygon = new MorphingPolygon_1.MorphingPolygon(_this.mouseDownPoint, _this.mouseUpPoint);
                         _this.drawPolygon(_this.currentPolygon);
                         _this.saveCanvasState();
                     };
                     console.log("hello");
                     this.canvas = document.getElementById('TheCanvas');
+                    this.infoDisplay = document.getElementById('InfoDisplay');
                     this.context = this.canvas.getContext("2d");
                     this.currentPolygon = new MorphingPolygon_1.MorphingPolygon();
                     this.canvas.width = this.canvas.offsetWidth;
@@ -260,11 +329,22 @@ System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"]
                     this.canvas.addEventListener("mousedown", this.mouseDownEventHandler);
                     this.canvas.addEventListener("mouseup", this.mouseUpEventHandler);
                     this.canvas.addEventListener("mousemove", this.mouseMoveEventHandler);
+                    document.addEventListener("keydown", this.keyboardDownEventHandler);
                     this.undoButton = document.getElementById("UndoButton");
                     this.redoButton = document.getElementById("RedoButton");
+                    this.saveButton = document.getElementById("SaveButton");
                     this.undoButton.addEventListener("click", this.undoButtonClickEventHandler);
                     this.redoButton.addEventListener("click", this.redoButtonClickEventHandler);
+                    this.saveButton.addEventListener("click", this.saveButtonClickEventHandler);
                 }
+                /**
+                 * Event handler for when the canvas is resized.
+                 */
+                PrototypeCanvas.prototype.canvasOnResizeEventHandler = function () {
+                    this.canvas.width = this.canvas.offsetWidth;
+                    this.canvas.height = this.canvas.offsetHeight;
+                };
+                ;
                 /**
                  * Draws a rectangle on the canvas.
                  * @param polygon The polygon to draw.
@@ -301,23 +381,30 @@ System.register("PrototypeCanvas", ["Point", "MorphingPolygon", "CanvasHistory"]
                 };
                 return PrototypeCanvas;
             }());
-            exports_5("PrototypeCanvas", PrototypeCanvas);
+            exports_6("PrototypeCanvas", PrototypeCanvas);
         }
     };
 });
-System.register("main", ["PrototypeCanvas"], function (exports_6, context_6) {
+System.register("main", ["PrototypeCanvas", "DraggableElement"], function (exports_7, context_7) {
     "use strict";
-    var ProtoTypeCanvas_1, prototypeCanvas;
-    var __moduleName = context_6 && context_6.id;
+    var ProtoTypeCanvas_1, DraggableElement_1, prototypeCanvas, draggableElements, i, element, draggable;
+    var __moduleName = context_7 && context_7.id;
     return {
         setters: [
             function (ProtoTypeCanvas_1_1) {
                 ProtoTypeCanvas_1 = ProtoTypeCanvas_1_1;
+            },
+            function (DraggableElement_1_1) {
+                DraggableElement_1 = DraggableElement_1_1;
             }
         ],
         execute: function () {
-            // look into browserify, parceljs, other types of loaders
             prototypeCanvas = new ProtoTypeCanvas_1.PrototypeCanvas();
+            draggableElements = document.getElementsByClassName('draggable');
+            for (i = 0; i < draggableElements.length; i++) {
+                element = draggableElements[i];
+                draggable = new DraggableElement_1.DraggableElement(element);
+            }
         }
     };
 });

@@ -13,6 +13,8 @@ export class PrototypeCanvas {
     private canvasHistory: CanvasHistoryManager;
     private undoButton: HTMLButtonElement;
     private redoButton: HTMLButtonElement;
+    private infoDisplay: HTMLParagraphElement;
+    private saveButton: HTMLButtonElement;
 
     /**
      * Default constructor.  Initializes the canvas and context.
@@ -20,6 +22,7 @@ export class PrototypeCanvas {
     constructor() {
         console.log("hello");
         this.canvas = document.getElementById('TheCanvas') as HTMLCanvasElement;
+        this.infoDisplay = document.getElementById('InfoDisplay') as HTMLParagraphElement;
         this.context = this.canvas.getContext("2d");   
         this.currentPolygon = new MorphingPolygon();
         this.canvas.width = this.canvas.offsetWidth;
@@ -31,11 +34,35 @@ export class PrototypeCanvas {
         this.canvas.addEventListener("mouseup", this.mouseUpEventHandler);
         this.canvas.addEventListener("mousemove", this.mouseMoveEventHandler);
 
+        document.addEventListener("keydown", this.keyboardDownEventHandler);
+
         this.undoButton = document.getElementById("UndoButton") as HTMLButtonElement;
         this.redoButton = document.getElementById("RedoButton") as HTMLButtonElement;
+        this.saveButton = document.getElementById("SaveButton") as HTMLButtonElement;
+
         this.undoButton.addEventListener("click", this.undoButtonClickEventHandler);
         this.redoButton.addEventListener("click", this.redoButtonClickEventHandler);
+        this.saveButton.addEventListener("click", this.saveButtonClickEventHandler);
     }
+
+    /**
+     * Event handler for the key down event.  Manages keyboard shortcuts
+     */
+    private keyboardDownEventHandler = (e: KeyboardEvent) => {
+        if(e.keyCode == 90 && e.ctrlKey)
+            this.canvasHistory.undo();
+        if(e.keyCode == 89 && e.ctrlKey)
+            this.canvasHistory.redo();
+    }
+
+    /**
+     * Event handler 
+     */
+    private saveButtonClickEventHandler = (e: Event) => {
+        let image = this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+        window.location.href = image;
+    };
 
     /**
      * Event handler for the undo button. Calls the canvas history to undo the last action.
@@ -73,6 +100,8 @@ export class PrototypeCanvas {
         this.mouseUpPoint = new Point(x, y);
         this.currentPolygon = new MorphingPolygon(this.mouseDownPoint, this.mouseUpPoint);
 
+        this.infoDisplay.innerText = "X: " + x + " Y: " + y;
+
         if(this.drawInProgress){
             this.context.putImageData(this.canvasHistory.getCurrentState(), 0, 0);
 
@@ -94,6 +123,14 @@ export class PrototypeCanvas {
         this.drawPolygon(this.currentPolygon);
         this.saveCanvasState();
     }
+
+    /**
+     * Event handler for when the canvas is resized.
+     */
+    private canvasOnResizeEventHandler() {
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+    };
 
     /**
      * Draws a rectangle on the canvas. 

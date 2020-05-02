@@ -26,13 +26,20 @@
                 position:absolute;
                 top:10px;
                 right:10px;
+                padding:5px;
+                background-color: white;
+                cursor: move;
+                border: 1px solid black;
+                width:250px;
             }
             #InfoDisplay {
                 display:inline-block;
+                user-select: none;
             }
             #Buttons {
                 display:inline-block;
             }
+
         </style>
     </head>
     <body>
@@ -40,16 +47,16 @@
         <canvas id="TheCanvas">
         </canvas>
         <!-- Canvas Controls-->
-        <div id="CanvasControls">
+        <div id="CanvasControls" class="draggable">
             
             <!-- Info Display-->
-            <p id="InfoDisplay"></p>
+            <p id="InfoDisplay">X: 0 Y: 0</p>
             
             <!-- Canvas Control Buttons -->
             <div id="Buttons">
-                <button>Hello</button>
                 <button id="UndoButton">Undo</button>
                 <button id="RedoButton">Redo</button>
+                <button id="SaveButton">Save</button>
             </div>
         </div>
     </body>
