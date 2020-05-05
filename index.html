@@ -29,34 +29,46 @@
                 padding:5px;
                 background-color: white;
                 cursor: move;
-                border: 1px solid black;
                 width:250px;
+                box-shadow: 5px 5px 5px gray;
             }
             #InfoDisplay {
-                display:inline-block;
+                position:absolute;
+                z-index: 10;
+                bottom: 5px;
+                right: 10px;
+                /* display:inline-block; */
                 user-select: none;
             }
             #Buttons {
                 display:inline-block;
             }
-
+            .tool-selection {
+                border: 1px solid black;
+                margin: 5px;
+            }
         </style>
     </head>
     <body>
         <!-- Main Drawing Canvas -->
         <canvas id="TheCanvas">
         </canvas>
+        <!-- Info Display-->
+        <p id="InfoDisplay">X: 0 Y: 0</p>
         <!-- Canvas Controls-->
         <div id="CanvasControls" class="draggable">
-            
-            <!-- Info Display-->
-            <p id="InfoDisplay">X: 0 Y: 0</p>
-            
             <!-- Canvas Control Buttons -->
             <div id="Buttons">
                 <button id="UndoButton">Undo</button>
                 <button id="RedoButton">Redo</button>
                 <button id="SaveButton">Save</button>
+            </div>
+            <hr>
+            <div id="Tools">
+                <div id="MorphingPolygonToolOption" class="tool-selection">Morphing Polygon</div>
+                <div id="RectangleToolOption" class="tool-selection">Rectangle</div>
+                <div id="LineToolOption" class="tool-selection">Line</div>
+                <div id="TextToolOption" class="tool-selection">Text</div>
             </div>
         </div>
     </body>
