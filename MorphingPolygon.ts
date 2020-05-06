@@ -1,4 +1,5 @@
 import { Point } from "./Point";
+import { Line } from "./Line";
 
 export class MorphingPolygon {    
 
@@ -39,5 +40,17 @@ export class MorphingPolygon {
             this.bottomLeft = new Point(this.topLeft.x, this.bottomRight.y);
             this.topRight = new Point(this.bottomRight.x, this.topLeft.y);
         }
+    }
+
+    public draw(context: CanvasRenderingContext2D) {
+        let left = new Line(this.topLeft, this.bottomLeft);
+        let top = new Line(this.topLeft, this.topRight);
+        let bottom = new Line(this.bottomLeft, this.bottomRight);
+        let right = new Line(this.bottomRight, this.topRight);
+
+        left.draw(context);
+        top.draw(context);
+        bottom.draw(context);
+        right.draw(context);
     }
 }

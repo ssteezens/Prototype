@@ -2,6 +2,7 @@ import { Point } from "./Point";
 import { Rectangle } from "./Rectangle";
 import { MorphingPolygon } from "./MorphingPolygon";
 import { CanvasHistoryManager } from "./CanvasHistory";
+import { Line } from "./Line";
 
 export class PrototypeCanvas {
     private canvas: HTMLCanvasElement;
@@ -16,10 +17,10 @@ export class PrototypeCanvas {
     private infoDisplay: HTMLParagraphElement;
     private saveButton: HTMLButtonElement;
     private drawingMode: DrawingModes;
-    private morphingPolygonToolOption: HTMLDivElement;
-    private rectangleToolOption: HTMLDivElement;
-    private textToolOption: HTMLDivElement;
-    private lineToolOption: HTMLDivElement;
+    private morphingPolygonToolOption: HTMLButtonElement;
+    private rectangleToolOption: HTMLButtonElement;
+    private textToolOption: HTMLButtonElement;
+    private lineToolOption: HTMLButtonElement;
     private typingString: string;
 
     /**
@@ -50,10 +51,10 @@ export class PrototypeCanvas {
         this.saveButton = document.getElementById("SaveButton") as HTMLButtonElement;
 
         // drawing tools
-        this.textToolOption = document.getElementById("TextToolOption") as HTMLDivElement;
-        this.lineToolOption = document.getElementById("LineToolOption") as HTMLDivElement;
-        this.rectangleToolOption = document.getElementById("RectangleToolOption") as HTMLDivElement;
-        this.morphingPolygonToolOption = document.getElementById("MorphingPolygonToolOption") as HTMLDivElement;
+        this.textToolOption = document.getElementById("TextToolOption") as HTMLButtonElement;
+        this.lineToolOption = document.getElementById("LineToolOption") as HTMLButtonElement;
+        this.rectangleToolOption = document.getElementById("RectangleToolOption") as HTMLButtonElement;
+        this.morphingPolygonToolOption = document.getElementById("MorphingPolygonToolOption") as HTMLButtonElement;
 
         // button event handlers
         this.undoButton.addEventListener("click", this.undoButtonClickEventHandler);
@@ -157,6 +158,8 @@ export class PrototypeCanvas {
 
         if(this.drawingMode == DrawingModes.Text)
             this.typingInProgress = true;
+
+        var event = new Event("thing");
     }
 
     /**  
@@ -199,14 +202,15 @@ export class PrototypeCanvas {
         {
             case DrawingModes.MorphingPolygon:
                 var morphingPolygon = new MorphingPolygon(this.mouseDownPoint, this.mouseUpPoint);
-                this.drawMorphingPolygon(morphingPolygon);
+                morphingPolygon.draw(this.context);
                 break;
             case DrawingModes.Rectangle:
                 var rectangle = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
-                this.drawRectangle(rectangle);
+                rectangle.draw(this.context);
                 break;
             case DrawingModes.Line:
-                this.drawLine(this.mouseDownPoint, this.mouseUpPoint);
+                var line = new Line(this.mouseDownPoint, this.mouseUpPoint);
+                line.draw(this.context);
                 break;
         }
     }
@@ -218,47 +222,6 @@ export class PrototypeCanvas {
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
     };
-
-    private drawRectangle(rectangle: Rectangle) {
-        // draw left line
-        this.drawLine(rectangle.topLeft, rectangle.bottomLeft);
-        // draw top line
-        this.drawLine(rectangle.topLeft, rectangle.topRight);
-        // draw bottom line
-        this.drawLine(rectangle.bottomLeft, rectangle.bottomRight);
-        // draw right line
-        this.drawLine(rectangle.bottomRight, rectangle.topRight);
-    }
-
-    /**
-     * Draws a rectangle on the canvas. 
-     * @param polygon The polygon to draw.
-     */    
-    private drawMorphingPolygon(polygon: MorphingPolygon) {
-        // draw left line
-        this.drawLine(polygon.topLeft, polygon.bottomLeft);
-        // draw top line
-        this.drawLine(polygon.topLeft, polygon.topRight);
-        // draw bottom line
-        this.drawLine(polygon.bottomLeft, polygon.bottomRight);
-        // draw right line
-        this.drawLine(polygon.bottomRight, polygon.topRight);
-    }
-
-    /**
-     * Draws a line connecting two points.
-     * @param pointOne The point to draw from.
-     * @param pointTwo The point to draw to.
-     */
-    private drawLine(pointOne: Point, pointTwo: Point) {
-        if(pointOne == undefined || pointTwo == undefined) 
-            return;
-        this.context.beginPath();
-        this.context.moveTo(pointOne.x, pointOne.y);
-        this.context.lineTo(pointTwo.x, pointTwo.y);
-        this.context.stroke();
-        this.context.closePath();
-    }
 
     /**
      * Saves the current canvas state.

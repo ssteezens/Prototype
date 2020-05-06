@@ -21,17 +21,6 @@
                 padding:5px;
             }
 
-            #CanvasControls {
-                z-index: 10;
-                position:absolute;
-                top:10px;
-                right:10px;
-                padding:5px;
-                background-color: white;
-                cursor: move;
-                width:250px;
-                box-shadow: 5px 5px 5px gray;
-            }
             #InfoDisplay {
                 position:absolute;
                 z-index: 10;
@@ -42,10 +31,34 @@
             }
             #Buttons {
                 display:inline-block;
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                user-select: none;
             }
+            #CanvasControls {
+                position:absolute;
+                right:10px;
+                top:45%;
+                max-width:50px;
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+                background-color: white;
+                box-shadow: -7px 1px 7px grey;
+            }
+
             .tool-selection {
                 border: 1px solid black;
                 margin: 5px;
+                width: 25px;
+                text-align: center;
+                display:block;
+            }
+            .draggable-header {
+                cursor:move;
+                background-color: #f1f1f1;
+                padding:5px;
+                margin:4px;
             }
         </style>
     </head>
@@ -55,25 +68,21 @@
         </canvas>
         <!-- Info Display-->
         <p id="InfoDisplay">X: 0 Y: 0</p>
-        <!-- Canvas Controls-->
+        <!-- Canvas Control Buttons -->
+        <div id="Buttons">
+            <button id="UndoButton">Undo</button>
+            <button id="RedoButton">Redo</button>
+            <button id="SaveButton">Save</button>
+        </div>
         <div id="CanvasControls" class="draggable">
-            <!-- Canvas Control Buttons -->
-            <div id="Buttons">
-                <button id="UndoButton">Undo</button>
-                <button id="RedoButton">Redo</button>
-                <button id="SaveButton">Save</button>
-            </div>
-            <hr>
-            <div id="Tools">
-                <div id="MorphingPolygonToolOption" class="tool-selection">Morphing Polygon</div>
-                <div id="RectangleToolOption" class="tool-selection">Rectangle</div>
-                <div id="LineToolOption" class="tool-selection">Line</div>
-                <div id="TextToolOption" class="tool-selection">Text</div>
-            </div>
+            <div class="draggable-header"></div>
+            <button id="MorphingPolygonToolOption" class="tool-selection">M</button>
+            <button id="RectangleToolOption" class="tool-selection">R</button>
+            <button id="LineToolOption" class="tool-selection">L</button>
+            <button id="TextToolOption" class="tool-selection">T</button>
         </div>
     </body>
     <foot>
-        <!-- <script src="main.js"></script> -->
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.20.13/system.js"></script>
         <script>
             System.import('./bundle.js')

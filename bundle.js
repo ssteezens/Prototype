@@ -319,7 +319,7 @@ System.register("PrototypeCanvas", ["Point", "Rectangle", "MorphingPolygon", "Ca
                      * Event handler
                      */
                     this.saveButtonClickEventHandler = function (e) {
-                        var image = _this.canvas.toDataURL("image/png"); //.replace("image/png", "image/octet-stream");
+                        var image = _this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
                         window.location.href = image;
                     };
                     /**
@@ -418,9 +418,6 @@ System.register("PrototypeCanvas", ["Point", "Rectangle", "MorphingPolygon", "Ca
                         case DrawingModes.Line:
                             this.drawLine(this.mouseDownPoint, this.mouseUpPoint);
                             break;
-                        case DrawingModes.Text:
-                            // todo
-                            break;
                     }
                 };
                 /**
@@ -454,9 +451,6 @@ System.register("PrototypeCanvas", ["Point", "Rectangle", "MorphingPolygon", "Ca
                     this.drawLine(polygon.bottomLeft, polygon.bottomRight);
                     // draw right line
                     this.drawLine(polygon.bottomRight, polygon.topRight);
-                };
-                PrototypeCanvas.prototype.drawText = function () {
-                    // todo
                 };
                 /**
                  * Draws a line connecting two points.
