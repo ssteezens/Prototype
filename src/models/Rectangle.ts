@@ -1,13 +1,12 @@
-import { Point } from "./Point";
+import { Point } from "../Point";
 import { Line } from "./Line";
 
-export class MorphingPolygon {    
-
+export class Rectangle {
     public topLeft: Point;
     public bottomLeft: Point;
     public topRight: Point;
     public bottomRight: Point;
-
+    
     /**
      *  Creates a rectangle from two points.
      */
@@ -42,15 +41,15 @@ export class MorphingPolygon {
         }
     }
 
-    public draw(context: CanvasRenderingContext2D) {
+    public draw() {
         let left = new Line(this.topLeft, this.bottomLeft);
         let top = new Line(this.topLeft, this.topRight);
         let bottom = new Line(this.bottomLeft, this.bottomRight);
         let right = new Line(this.bottomRight, this.topRight);
 
-        left.draw(context);
-        top.draw(context);
-        bottom.draw(context);
-        right.draw(context);
+        left.draw();
+        top.draw();
+        bottom.draw();
+        right.draw();
     }
 }

@@ -1,27 +1,24 @@
 import { Point } from "./Point";
-import { Rectangle } from "./Rectangle";
-import { MorphingPolygon } from "./MorphingPolygon";
+import { RectangleTool } from "./tools/RectangleTool";
+import { MorphingPolygonTool } from "./tools/MorphingPolygonTool";
 import { CanvasHistoryManager } from "./CanvasHistory";
-import { Line } from "./Line";
+import { LineTool } from "./tools/LineTool";
+import { CanvasInstance } from "./CanvasInstance";
+import { TextTool } from "./tools/TextTool";
 
 export class PrototypeCanvas {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
-    private dragInProgress: boolean;
-    private typingInProgress: boolean;
-    private mouseDownPoint: Point;
-    private mouseUpPoint: Point;
     private canvasHistory: CanvasHistoryManager;
     private undoButton: HTMLButtonElement;
     private redoButton: HTMLButtonElement;
     private infoDisplay: HTMLParagraphElement;
     private saveButton: HTMLButtonElement;
-    private drawingMode: DrawingModes;
     private morphingPolygonToolOption: HTMLButtonElement;
     private rectangleToolOption: HTMLButtonElement;
     private textToolOption: HTMLButtonElement;
     private lineToolOption: HTMLButtonElement;
-    private typingString: string;
+    private currentTool: ICanvasTool;
 
     /**
      * Default constructor.  Initializes the canvas and context.
@@ -35,9 +32,12 @@ export class PrototypeCanvas {
         this.canvas.height = this.canvas.offsetHeight;
         this.canvasHistory = new CanvasHistoryManager(this.context);
         this.canvasHistory.add(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
-        this.drawingMode = DrawingModes.MorphingPolygon;
-        this.typingString = "";
+        this.currentTool = new MorphingPolygonTool();
 
+        CanvasInstance.SetCurrentCanvas(this.canvas);
+        CanvasInstance.SetCurrentContext(this.context);
+        CanvasInstance.SetHistoryManager(this.canvasHistory);
+        
         this.canvas.addEventListener("mousedown", this.mouseDownEventHandler);
         this.canvas.addEventListener("mouseup", this.mouseUpEventHandler);
         this.canvas.addEventListener("mousemove", this.mouseMoveEventHandler);
@@ -70,28 +70,28 @@ export class PrototypeCanvas {
      * Event handler for morphing rectangle option click event.
      */
     private morphingRectangleToolClickEventHandler = (e: Event) => {
-        this.drawingMode = DrawingModes.MorphingPolygon;
+        this.currentTool = new MorphingPolygonTool();
     }
  
     /**
      * Event handler for rectangle tool option click event.
      */
     private rectangleToolClickEventHandler = (e: Event) => {
-        this.drawingMode = DrawingModes.Rectangle;
+        this.currentTool = new RectangleTool();
     }
 
     /**
      * Event handler for text tool option click event.
      */
     private textToolClickEventHandler = (e: Event) => {
-        this.drawingMode = DrawingModes.Text;
+        this.currentTool = new TextTool();
     }
 
     /**
      * Event handler for line tool option click event.
      */
     private lineToolOptionClickEventHandler = (e: Event) => {
-        this.drawingMode = DrawingModes.Line;
+        this.currentTool = new LineTool();
     }
 
     /**
@@ -104,22 +104,8 @@ export class PrototypeCanvas {
         // redo keyboard shortcut
         if(e.keyCode == 89 && e.ctrlKey)
             this.canvasHistory.redo();
-        // enter key
-        if(e.keyCode == 13) {
-            // end typing event if in progress
-            if(this.typingInProgress){
-                this.typingInProgress = false;
-                this.typingString = "";
-                this.saveCanvasState();
-            }
-        }
-        // draw typing
-        if(this.typingInProgress){
-            this.context.putImageData(this.canvasHistory.getCurrentState(), 0, 0);
-            this.typingString += e.key;
-            this.context.font = "30px Ariel";
-            this.context.fillText(this.typingString, this.mouseDownPoint.x, this.mouseDownPoint.y);
-        }
+        
+        this.currentTool.keyDownEventHandler(e);
     }
 
     /**
@@ -149,17 +135,7 @@ export class PrototypeCanvas {
      * Event handler for canvas mouse down event.
      */
     private mouseDownEventHandler = (e: MouseEvent) =>  {
-        this.dragInProgress = true;
-
-        let x = e.clientX - this.canvas.offsetLeft;
-        let y = e.clientY - this.canvas.offsetTop;
-
-        this.mouseDownPoint = new Point(x, y);
-
-        if(this.drawingMode == DrawingModes.Text)
-            this.typingInProgress = true;
-
-        var event = new Event("thing");
+        this.currentTool.mouseDownEventHandler(e);
     }
 
     /**  
@@ -169,50 +145,16 @@ export class PrototypeCanvas {
         let x = e.clientX - this.canvas.offsetLeft;
         let y = e.clientY - this.canvas.offsetTop;
         
-        this.mouseUpPoint = new Point(x, y);
         this.infoDisplay.innerText = "X: " + x + " Y: " + y;
 
-        if(this.dragInProgress){
-            this.context.putImageData(this.canvasHistory.getCurrentState(), 0, 0);
-
-            this.draw();
-        }
+        this.currentTool.mouseMoveEventHandler(e);
     }
 
     /**  
      * Event handler for canvas mouse up event.
      */
     private mouseUpEventHandler = (e: MouseEvent) => {
-        this.dragInProgress = false;
-        let x = e.clientX - this.canvas.offsetLeft;
-        let y = e.clientY - this.canvas.offsetTop;
-        
-        this.mouseUpPoint = new Point(x, y);
-
-        this.draw();
-        this.saveCanvasState();
-    }
-
-    /**
-     * Draw on the canvas with the current drawing mode.
-     */
-    private draw() {
-
-        switch(this.drawingMode) 
-        {
-            case DrawingModes.MorphingPolygon:
-                var morphingPolygon = new MorphingPolygon(this.mouseDownPoint, this.mouseUpPoint);
-                morphingPolygon.draw(this.context);
-                break;
-            case DrawingModes.Rectangle:
-                var rectangle = new Rectangle(this.mouseDownPoint, this.mouseUpPoint);
-                rectangle.draw(this.context);
-                break;
-            case DrawingModes.Line:
-                var line = new Line(this.mouseDownPoint, this.mouseUpPoint);
-                line.draw(this.context);
-                break;
-        }
+        this.currentTool.mouseUpEventHandler(e);
     }
 
     /**
@@ -222,12 +164,4 @@ export class PrototypeCanvas {
         this.canvas.width = this.canvas.offsetWidth;
         this.canvas.height = this.canvas.offsetHeight;
     };
-
-    /**
-     * Saves the current canvas state.
-     */
-    private saveCanvasState() {
-        this.canvasHistory.add(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
-    }
 }
-
