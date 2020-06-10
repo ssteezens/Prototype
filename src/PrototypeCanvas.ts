@@ -5,6 +5,7 @@ import { CanvasHistoryManager } from "./CanvasHistory";
 import { LineTool } from "./tools/LineTool";
 import { CanvasInstance } from "./CanvasInstance";
 import { TextTool } from "./tools/TextTool";
+import { Receiver } from "./Receiver";
 
 export class PrototypeCanvas {
     private canvas: HTMLCanvasElement;
@@ -19,6 +20,7 @@ export class PrototypeCanvas {
     private textToolOption: HTMLButtonElement;
     private lineToolOption: HTMLButtonElement;
     private currentTool: ICanvasTool;
+    private receiver: Receiver;
 
     /**
      * Default constructor.  Initializes the canvas and context.

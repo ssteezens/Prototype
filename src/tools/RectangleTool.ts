@@ -11,6 +11,7 @@ export class RectangleTool implements ICanvasTool {
      *  Creates a rectangle from two points.
      */
     constructor(point1: Point = new Point(0,0), point2: Point = new Point(0,0)) {
+        
     }
 
     mouseDownEventHandler(e: MouseEvent) {

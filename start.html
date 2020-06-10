@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html, head, body {
+                width: 100vh;
+                height: 100vh;
+            }
+            body {
+                position: relative;
+            }
+            main {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            button {
+                padding:5px;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <label for="joinNumber">Join a board: </label>
+            <input type="number" id="joinNumber" />
+            <hr>
+            <p style="text-align: center;">OR</p>
+            <hr>
+            <label>Create a new board:<label>
+            <button>Start</button>
+        </main>
+    </body>
+</html>
