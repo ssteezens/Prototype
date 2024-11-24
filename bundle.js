@@ -8,12 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -38,10 +38,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -214,6 +216,7 @@ var DrawingModes;
     DrawingModes[DrawingModes["Rectangle"] = 1] = "Rectangle";
     DrawingModes[DrawingModes["Text"] = 2] = "Text";
     DrawingModes[DrawingModes["Line"] = 3] = "Line";
+    DrawingModes[DrawingModes["Block"] = 4] = "Block";
 })(DrawingModes || (DrawingModes = {}));
 System.register("models/Line", ["Point", "CanvasInstance"], function (exports_5, context_5) {
     "use strict";
@@ -230,9 +233,6 @@ System.register("models/Line", ["Point", "CanvasInstance"], function (exports_5,
         ],
         execute: function () {
             Line = /** @class */ (function () {
-                /**
-                 *
-                 */
                 function Line(point1, point2) {
                     if (point1 === void 0) { point1 = new Point_2.Point(); }
                     if (point2 === void 0) { point2 = new Point_2.Point(); }
@@ -721,7 +721,7 @@ System.register("dependencies/webstomp/versions", [], function (exports_17, cont
                  * Used while creating a WebSocket
                  */
                 Versions.prototype.protocolVersions = function () {
-                    return this.versions.map(function (x) { return "v" + x.replace('.', '') + ".stomp"; });
+                    return this.versions.map(function (x) { return "v".concat(x.replace('.', ''), ".stomp"); });
                 };
                 /**
                  * Indicates protocol version 1.0
@@ -838,7 +838,7 @@ System.register("dependencies/webstomp/frame-impl", ["dependencies/webstomp/byte
                         }
                         return this._body;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(FrameImpl.prototype, "binaryBody", {
@@ -851,7 +851,7 @@ System.register("dependencies/webstomp/frame-impl", ["dependencies/webstomp/byte
                         }
                         return this._binaryBody;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 /**
@@ -911,14 +911,14 @@ System.register("dependencies/webstomp/frame-impl", ["dependencies/webstomp/byte
                         var name_1 = _a[_i];
                         var value = this.headers[name_1];
                         if (this.escapeHeaderValues && (this.command !== 'CONNECT') && (this.command !== 'CONNECTED')) {
-                            lines.push(name_1 + ":" + FrameImpl.hdrValueEscape("" + value));
+                            lines.push("".concat(name_1, ":").concat(FrameImpl.hdrValueEscape("".concat(value))));
                         }
                         else {
-                            lines.push(name_1 + ":" + value);
+                            lines.push("".concat(name_1, ":").concat(value));
                         }
                     }
                     if (this.isBinaryBody || (!this.isBodyEmpty() && !this.skipContentLengthHeader)) {
-                        lines.push("content-length:" + this.bodyLength());
+                        lines.push("content-length:".concat(this.bodyLength()));
                     }
                     return lines.join(byte_1.BYTE.LF) + byte_1.BYTE.LF + byte_1.BYTE.LF;
                 };
@@ -1232,8 +1232,7 @@ System.register("dependencies/webstomp/web-socket-state", [], function (exports_
                 WebSocketState[WebSocketState["OPEN"] = 1] = "OPEN";
                 WebSocketState[WebSocketState["CLOSING"] = 2] = "CLOSING";
                 WebSocketState[WebSocketState["CLOSED"] = 3] = "CLOSED";
-            })(WebSocketState || (WebSocketState = {}));
-            exports_23("WebSocketState", WebSocketState);
+            })(WebSocketState || (exports_23("WebSocketState", WebSocketState = {})));
         }
     };
 });
@@ -1269,14 +1268,14 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
              */
             StompHandler = /** @class */ (function () {
                 function StompHandler(_client, _webSocket, config) {
-                    var _this = this;
                     if (config === void 0) { config = {}; }
+                    var _this = this;
                     this._client = _client;
                     this._webSocket = _webSocket;
                     this._serverFrameHandlers = {
                         // [CONNECTED Frame](http://stomp.github.com/stomp-specification-1.2.html#CONNECTED_Frame)
                         CONNECTED: function (frame) {
-                            _this.debug("connected to server " + frame.headers.server);
+                            _this.debug("connected to server ".concat(frame.headers.server));
                             _this._connected = true;
                             _this._connectedVersion = frame.headers.version;
                             // STOMP version 1.2 needs header values to be escaped
@@ -1345,14 +1344,14 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                     get: function () {
                         return this._connectedVersion;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(StompHandler.prototype, "connected", {
                     get: function () {
                         return this._connected;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 StompHandler.prototype.configure = function (conf) {
@@ -1367,7 +1366,7 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                         var frame = frame_impl_1.FrameImpl.fromRawFrame(rawFrame, _this._escapeHeaderValues);
                         // if this.logRawCommunication is set, the rawChunk is logged at this._webSocket.onmessage
                         if (!_this.logRawCommunication) {
-                            _this.debug("<<< " + frame);
+                            _this.debug("<<< ".concat(frame));
                         }
                         var serverFrameHandler = _this._serverFrameHandlers[frame.command] || _this.onUnhandledFrame;
                         serverFrameHandler(frame);
@@ -1381,12 +1380,12 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                         _this._lastServerActivityTS = Date.now();
                         if (_this.logRawCommunication) {
                             var rawChunkAsString = (evt.data instanceof ArrayBuffer) ? new TextDecoder().decode(evt.data) : evt.data;
-                            _this.debug("<<< " + rawChunkAsString);
+                            _this.debug("<<< ".concat(rawChunkAsString));
                         }
                         parser.parseChunk(evt.data, _this.appendMissingNULLonIncoming);
                     };
                     this._webSocket.onclose = function (closeEvent) {
-                        _this.debug("Connection closed to " + _this._webSocket.url);
+                        _this.debug("Connection closed to ".concat(_this._webSocket.url));
                         _this.onWebSocketClose(closeEvent);
                         _this._cleanUp();
                     };
@@ -1418,7 +1417,7 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                     var _a = (headers['heart-beat']).split(',').map(function (v) { return parseInt(v, 10); }), serverOutgoing = _a[0], serverIncoming = _a[1];
                     if ((this.heartbeatOutgoing !== 0) && (serverIncoming !== 0)) {
                         var ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
-                        this.debug("send PING every " + ttl + "ms");
+                        this.debug("send PING every ".concat(ttl, "ms"));
                         this._pinger = setInterval(function () {
                             if (_this._webSocket.readyState === web_socket_state_1.WebSocketState.OPEN) {
                                 _this._webSocket.send(byte_2.BYTE.LF);
@@ -1428,12 +1427,12 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                     }
                     if ((this.heartbeatIncoming !== 0) && (serverOutgoing !== 0)) {
                         var ttl_1 = Math.max(this.heartbeatIncoming, serverOutgoing);
-                        this.debug("check PONG every " + ttl_1 + "ms");
+                        this.debug("check PONG every ".concat(ttl_1, "ms"));
                         this._ponger = setInterval(function () {
                             var delta = Date.now() - _this._lastServerActivityTS;
                             // We wait twice the TTL to be flexible on window's setInterval calls
                             if (delta > (ttl_1 * 2)) {
-                                _this.debug("did not receive server activity for the last " + delta + "ms");
+                                _this.debug("did not receive server activity for the last ".concat(delta, "ms"));
                                 _this._closeWebsocket();
                             }
                         }, ttl_1);
@@ -1455,10 +1454,10 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                     });
                     var rawChunk = frame.serialize();
                     if (this.logRawCommunication) {
-                        this.debug(">>> " + rawChunk);
+                        this.debug(">>> ".concat(rawChunk));
                     }
                     else {
-                        this.debug(">>> " + frame);
+                        this.debug(">>> ".concat(frame));
                     }
                     if (this.forceBinaryWSFrames && typeof rawChunk === 'string') {
                         rawChunk = new TextEncoder().encode(rawChunk);
@@ -1472,7 +1471,7 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                             var chunk = out.substring(0, this.maxWebSocketChunkSize);
                             out = out.substring(this.maxWebSocketChunkSize);
                             this._webSocket.send(chunk);
-                            this.debug("chunk sent = " + chunk.length + ", remaining = " + out.length);
+                            this.debug("chunk sent = ".concat(chunk.length, ", remaining = ").concat(out.length));
                         }
                     }
                 };
@@ -1483,7 +1482,7 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                             // clone before updating
                             var disconnectHeaders = Object.assign({}, this.disconnectHeaders);
                             if (!disconnectHeaders.receipt) {
-                                disconnectHeaders.receipt = "close-" + this._counter++;
+                                disconnectHeaders.receipt = "close-".concat(this._counter++);
                             }
                             this.watchForReceipt(disconnectHeaders.receipt, function (frame) {
                                 _this._closeWebsocket();
@@ -1493,7 +1492,7 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                             this._transmit({ command: 'DISCONNECT', headers: disconnectHeaders });
                         }
                         catch (error) {
-                            this.debug("Ignoring error during disconnect " + error);
+                            this.debug("Ignoring error during disconnect ".concat(error));
                         }
                     }
                     else {
@@ -1530,7 +1529,7 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                     if (headers === void 0) { headers = {}; }
                     headers = Object.assign({}, headers);
                     if (!headers.id) {
-                        headers.id = "sub-" + this._counter++;
+                        headers.id = "sub-".concat(this._counter++);
                     }
                     headers.destination = destination;
                     this._subscriptions[headers.id] = callback;
@@ -1551,7 +1550,7 @@ System.register("dependencies/webstomp/stomp-handler", ["dependencies/webstomp/b
                     this._transmit({ command: 'UNSUBSCRIBE', headers: headers });
                 };
                 StompHandler.prototype.begin = function (transactionId) {
-                    var txId = transactionId || ("tx-" + this._counter++);
+                    var txId = transactionId || ("tx-".concat(this._counter++));
                     this._transmit({
                         command: 'BEGIN', headers: {
                             transaction: txId
@@ -1728,7 +1727,7 @@ System.register("dependencies/webstomp/client", ["dependencies/webstomp/stomp-ha
                     get: function () {
                         return this._webSocket;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(Client.prototype, "disconnectHeaders", {
@@ -1744,7 +1743,7 @@ System.register("dependencies/webstomp/client", ["dependencies/webstomp/stomp-ha
                             this._stompHandler.disconnectHeaders = this._disconnectHeaders;
                         }
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(Client.prototype, "connected", {
@@ -1754,7 +1753,7 @@ System.register("dependencies/webstomp/client", ["dependencies/webstomp/stomp-ha
                     get: function () {
                         return (!!this._stompHandler) && this._stompHandler.connected;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(Client.prototype, "connectedVersion", {
@@ -1764,7 +1763,7 @@ System.register("dependencies/webstomp/client", ["dependencies/webstomp/stomp-ha
                     get: function () {
                         return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(Client.prototype, "active", {
@@ -1774,7 +1773,7 @@ System.register("dependencies/webstomp/client", ["dependencies/webstomp/stomp-ha
                     get: function () {
                         return this._active;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 /**
@@ -1882,7 +1881,7 @@ System.register("dependencies/webstomp/client", ["dependencies/webstomp/stomp-ha
                 Client.prototype._schedule_reconnect = function () {
                     var _this = this;
                     if (this.reconnectDelay > 0) {
-                        this.debug("STOMP: scheduling reconnection in " + this.reconnectDelay + "ms");
+                        this.debug("STOMP: scheduling reconnection in ".concat(this.reconnectDelay, "ms"));
                         this._reconnector = setTimeout(function () {
                             _this._connect();
                         }, this.reconnectDelay);
@@ -2171,10 +2170,44 @@ System.register("Receiver", ["dependencies/webstomp/client"], function (exports_
         }
     };
 });
-System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygonTool", "CanvasHistory", "tools/LineTool", "CanvasInstance", "tools/TextTool"], function (exports_27, context_27) {
+System.register("tools/BlockTool", ["CanvasInstance"], function (exports_27, context_27) {
     "use strict";
-    var RectangleTool_1, MorphingPolygonTool_1, CanvasHistory_1, LineTool_1, CanvasInstance_6, TextTool_1, PrototypeCanvas;
+    var CanvasInstance_6, BlockTool;
     var __moduleName = context_27 && context_27.id;
+    return {
+        setters: [
+            function (CanvasInstance_6_1) {
+                CanvasInstance_6 = CanvasInstance_6_1;
+            }
+        ],
+        execute: function () {
+            BlockTool = /** @class */ (function () {
+                function BlockTool(blockSize, color) {
+                    if (blockSize === void 0) { blockSize = 20; }
+                    if (color === void 0) { color = "red"; }
+                    this.blockSize = blockSize;
+                    this.color = color;
+                }
+                BlockTool.prototype.mouseDownEventHandler = function (e) {
+                    var x = e.clientX - CanvasInstance_6.CanvasInstance.Canvas().offsetLeft;
+                    var y = e.clientY - CanvasInstance_6.CanvasInstance.Canvas().offsetTop;
+                    CanvasInstance_6.CanvasInstance.Context().fillStyle = this.color;
+                    CanvasInstance_6.CanvasInstance.Context().fillRect(x, y, this.blockSize, this.blockSize);
+                };
+                BlockTool.prototype.mouseUpEventHandler = function (e) { };
+                BlockTool.prototype.mouseMoveEventHandler = function (e) { };
+                BlockTool.prototype.keyDownEventHandler = function (e) { };
+                BlockTool.prototype.draw = function () { };
+                return BlockTool;
+            }());
+            exports_27("BlockTool", BlockTool);
+        }
+    };
+});
+System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygonTool", "CanvasHistory", "tools/LineTool", "CanvasInstance", "tools/TextTool", "tools/BlockTool"], function (exports_28, context_28) {
+    "use strict";
+    var RectangleTool_1, MorphingPolygonTool_1, CanvasHistory_1, LineTool_1, CanvasInstance_7, TextTool_1, BlockTool_1, PrototypeCanvas;
+    var __moduleName = context_28 && context_28.id;
     return {
         setters: [
             function (RectangleTool_1_1) {
@@ -2189,11 +2222,14 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
             function (LineTool_1_1) {
                 LineTool_1 = LineTool_1_1;
             },
-            function (CanvasInstance_6_1) {
-                CanvasInstance_6 = CanvasInstance_6_1;
+            function (CanvasInstance_7_1) {
+                CanvasInstance_7 = CanvasInstance_7_1;
             },
             function (TextTool_1_1) {
                 TextTool_1 = TextTool_1_1;
+            },
+            function (BlockTool_1_1) {
+                BlockTool_1 = BlockTool_1_1;
             }
         ],
         execute: function () {
@@ -2203,6 +2239,7 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
                  */
                 function PrototypeCanvas() {
                     var _this = this;
+                    this.gridVisible = false;
                     /**
                      * Event handler for morphing rectangle option click event.
                      */
@@ -2227,6 +2264,9 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
                     this.lineToolOptionClickEventHandler = function (e) {
                         _this.currentTool = new LineTool_1.LineTool();
                     };
+                    this.blockToolOptionClickEventHandler = function (e) {
+                        _this.currentTool = new BlockTool_1.BlockTool();
+                    };
                     /**
                      * Event handler for the key down event.  Manages keyboard shortcuts
                      */
@@ -2245,6 +2285,14 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
                     this.saveButtonClickEventHandler = function (e) {
                         var image = _this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
                         window.location.href = image;
+                    };
+                    this.gridLinesButtonClickEventHandler = function (e) {
+                        _this.gridVisible = !_this.gridVisible;
+                        var gridOverlay = document.getElementById('GridOverlay');
+                        gridOverlay.style.display = _this.gridVisible ? 'block' : 'none';
+                        if (_this.gridVisible && gridOverlay.children.length === 0) {
+                            _this.createGrid();
+                        }
                     };
                     /**
                      * Event handler for the undo button. Calls the canvas history to undo the last action.
@@ -2288,17 +2336,16 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
                     this.canvasHistory = new CanvasHistory_1.CanvasHistoryManager(this.context);
                     this.canvasHistory.add(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
                     this.currentTool = new MorphingPolygonTool_1.MorphingPolygonTool();
-                    // this.receiver = new Receiver();
-                    // this.receiver.connect();
-                    CanvasInstance_6.CanvasInstance.SetCurrentCanvas(this.canvas);
-                    CanvasInstance_6.CanvasInstance.SetCurrentContext(this.context);
-                    CanvasInstance_6.CanvasInstance.SetHistoryManager(this.canvasHistory);
+                    CanvasInstance_7.CanvasInstance.SetCurrentCanvas(this.canvas);
+                    CanvasInstance_7.CanvasInstance.SetCurrentContext(this.context);
+                    CanvasInstance_7.CanvasInstance.SetHistoryManager(this.canvasHistory);
                     this.canvas.addEventListener("mousedown", this.mouseDownEventHandler);
                     this.canvas.addEventListener("mouseup", this.mouseUpEventHandler);
                     this.canvas.addEventListener("mousemove", this.mouseMoveEventHandler);
                     this.canvas.addEventListener("resize", this.canvasOnResizeEventHandler);
                     document.addEventListener("keydown", this.keyboardDownEventHandler);
                     // edit buttons
+                    this.gridLinesButton = document.getElementById("GridLinesButton");
                     this.undoButton = document.getElementById("UndoButton");
                     this.redoButton = document.getElementById("RedoButton");
                     this.saveButton = document.getElementById("SaveButton");
@@ -2307,7 +2354,9 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
                     this.lineToolOption = document.getElementById("LineToolOption");
                     this.rectangleToolOption = document.getElementById("RectangleToolOption");
                     this.morphingPolygonToolOption = document.getElementById("MorphingPolygonToolOption");
+                    this.blockToolOption = document.getElementById("BlockToolOption");
                     // button event handlers
+                    this.gridLinesButton.addEventListener("click", this.gridLinesButtonClickEventHandler);
                     this.undoButton.addEventListener("click", this.undoButtonClickEventHandler);
                     this.redoButton.addEventListener("click", this.redoButtonClickEventHandler);
                     this.saveButton.addEventListener("click", this.saveButtonClickEventHandler);
@@ -2315,7 +2364,30 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
                     this.lineToolOption.addEventListener("click", this.lineToolOptionClickEventHandler);
                     this.rectangleToolOption.addEventListener("click", this.rectangleToolClickEventHandler);
                     this.morphingPolygonToolOption.addEventListener("click", this.morphingRectangleToolClickEventHandler);
+                    this.blockToolOption.addEventListener("click", this.blockToolOptionClickEventHandler);
                 }
+                PrototypeCanvas.prototype.createGrid = function () {
+                    var blockSize = 20;
+                    var xLineCount = this.canvas.height / blockSize;
+                    var yLineCount = this.canvas.width / blockSize;
+                    var gridOverlay = document.getElementById('GridOverlay');
+                    var currentYPoint = 0;
+                    for (var i = 0; i < xLineCount; i++) {
+                        var gridLine = document.createElement('div');
+                        gridLine.classList.add('grid-line-x');
+                        gridLine.style.top = "".concat(currentYPoint, "px");
+                        gridOverlay.appendChild(gridLine);
+                        currentYPoint += blockSize;
+                    }
+                    var currentXPoint = 0;
+                    for (var i = 0; i < yLineCount; i++) {
+                        var gridLine = document.createElement('div');
+                        gridLine.classList.add('grid-line-y');
+                        gridLine.style.left = "".concat(currentXPoint, "px");
+                        gridOverlay.appendChild(gridLine);
+                        currentXPoint += blockSize;
+                    }
+                };
                 /**
                  * Event handler for when the canvas is resized.
                  */
@@ -2326,31 +2398,28 @@ System.register("PrototypeCanvas", ["tools/RectangleTool", "tools/MorphingPolygo
                 ;
                 return PrototypeCanvas;
             }());
-            exports_27("PrototypeCanvas", PrototypeCanvas);
+            exports_28("PrototypeCanvas", PrototypeCanvas);
         }
     };
 });
-System.register("main", ["PrototypeCanvas", "DraggableElement", "Receiver"], function (exports_28, context_28) {
+System.register("main", ["PrototypeCanvas", "DraggableElement"], function (exports_29, context_29) {
     "use strict";
-    var ProtoTypeCanvas_1, DraggableElement_1, Receiver_1, prototypeCanvas, draggableElements, receiver, i, element, draggable;
-    var __moduleName = context_28 && context_28.id;
+    var PrototypeCanvas_1, DraggableElement_1, prototypeCanvas, draggableElements, i, element, draggable;
+    var __moduleName = context_29 && context_29.id;
     return {
         setters: [
-            function (ProtoTypeCanvas_1_1) {
-                ProtoTypeCanvas_1 = ProtoTypeCanvas_1_1;
+            function (PrototypeCanvas_1_1) {
+                PrototypeCanvas_1 = PrototypeCanvas_1_1;
             },
             function (DraggableElement_1_1) {
                 DraggableElement_1 = DraggableElement_1_1;
-            },
-            function (Receiver_1_1) {
-                Receiver_1 = Receiver_1_1;
             }
         ],
         execute: function () {
-            prototypeCanvas = new ProtoTypeCanvas_1.PrototypeCanvas();
+            prototypeCanvas = new PrototypeCanvas_1.PrototypeCanvas();
             draggableElements = document.getElementsByClassName('draggable');
-            receiver = new Receiver_1.Receiver();
-            receiver.connect();
+            // var receiver = new Receiver();
+            // receiver.connect();
             for (i = 0; i < draggableElements.length; i++) {
                 element = draggableElements[i];
                 draggable = new DraggableElement_1.DraggableElement(element);
@@ -2358,10 +2427,10 @@ System.register("main", ["PrototypeCanvas", "DraggableElement", "Receiver"], fun
         }
     };
 });
-System.register("dependencies/webstomp/compatibility/heartbeat-info", [], function (exports_29, context_29) {
+System.register("dependencies/webstomp/compatibility/heartbeat-info", [], function (exports_30, context_30) {
     "use strict";
     var HeartbeatInfo;
-    var __moduleName = context_29 && context_29.id;
+    var __moduleName = context_30 && context_30.id;
     return {
         setters: [],
         execute: function () {
@@ -2381,7 +2450,7 @@ System.register("dependencies/webstomp/compatibility/heartbeat-info", [], functi
                     set: function (value) {
                         this.client.heartbeatOutgoing = value;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(HeartbeatInfo.prototype, "incoming", {
@@ -2391,19 +2460,19 @@ System.register("dependencies/webstomp/compatibility/heartbeat-info", [], functi
                     set: function (value) {
                         this.client.heartbeatIncoming = value;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 return HeartbeatInfo;
             }());
-            exports_29("HeartbeatInfo", HeartbeatInfo);
+            exports_30("HeartbeatInfo", HeartbeatInfo);
         }
     };
 });
-System.register("dependencies/webstomp/compatibility/compat-client", ["dependencies/webstomp/client", "dependencies/webstomp/compatibility/heartbeat-info"], function (exports_30, context_30) {
+System.register("dependencies/webstomp/compatibility/compat-client", ["dependencies/webstomp/client", "dependencies/webstomp/compatibility/heartbeat-info"], function (exports_31, context_31) {
     "use strict";
     var client_2, heartbeat_info_1, CompatClient;
-    var __moduleName = context_30 && context_30.id;
+    var __moduleName = context_31 && context_31.id;
     return {
         setters: [
             function (client_2_1) {
@@ -2588,7 +2657,7 @@ System.register("dependencies/webstomp/compatibility/compat-client", ["dependenc
                     set: function (value) {
                         this.reconnectDelay = value;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(CompatClient.prototype, "ws", {
@@ -2600,7 +2669,7 @@ System.register("dependencies/webstomp/compatibility/compat-client", ["dependenc
                     get: function () {
                         return this._webSocket;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(CompatClient.prototype, "version", {
@@ -2612,7 +2681,7 @@ System.register("dependencies/webstomp/compatibility/compat-client", ["dependenc
                     get: function () {
                         return this.connectedVersion;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(CompatClient.prototype, "onreceive", {
@@ -2632,7 +2701,7 @@ System.register("dependencies/webstomp/compatibility/compat-client", ["dependenc
                     set: function (value) {
                         this.onUnhandledMessage = value;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(CompatClient.prototype, "onreceipt", {
@@ -2653,7 +2722,7 @@ System.register("dependencies/webstomp/compatibility/compat-client", ["dependenc
                     set: function (value) {
                         this.onUnhandledReceipt = value;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 Object.defineProperty(CompatClient.prototype, "heartbeat", {
@@ -2676,19 +2745,19 @@ System.register("dependencies/webstomp/compatibility/compat-client", ["dependenc
                         this.heartbeatIncoming = value.incoming;
                         this.heartbeatOutgoing = value.outgoing;
                     },
-                    enumerable: true,
+                    enumerable: false,
                     configurable: true
                 });
                 return CompatClient;
             }(client_2.Client));
-            exports_30("CompatClient", CompatClient);
+            exports_31("CompatClient", CompatClient);
         }
     };
 });
-System.register("dependencies/webstomp/compatibility/stomp", ["dependencies/webstomp/versions", "dependencies/webstomp/compatibility/compat-client"], function (exports_31, context_31) {
+System.register("dependencies/webstomp/compatibility/stomp", ["dependencies/webstomp/versions", "dependencies/webstomp/compatibility/compat-client"], function (exports_32, context_32) {
     "use strict";
     var versions_3, compat_client_1, Stomp;
-    var __moduleName = context_31 && context_31.id;
+    var __moduleName = context_32 && context_32.id;
     return {
         setters: [
             function (versions_3_1) {
@@ -2801,19 +2870,19 @@ System.register("dependencies/webstomp/compatibility/stomp", ["dependencies/webs
                 Stomp.WebSocketClass = null;
                 return Stomp;
             }());
-            exports_31("Stomp", Stomp);
+            exports_32("Stomp", Stomp);
         }
     };
 });
-System.register("dependencies/webstomp/index", ["dependencies/webstomp/client", "dependencies/webstomp/frame-impl", "dependencies/webstomp/parser", "dependencies/webstomp/stomp-config", "dependencies/webstomp/stomp-headers", "dependencies/webstomp/stomp-subscription", "dependencies/webstomp/versions", "dependencies/webstomp/web-socket-state", "dependencies/webstomp/compatibility/compat-client", "dependencies/webstomp/compatibility/stomp"], function (exports_32, context_32) {
+System.register("dependencies/webstomp/index", ["dependencies/webstomp/client", "dependencies/webstomp/frame-impl", "dependencies/webstomp/i-frame", "dependencies/webstomp/i-message", "dependencies/webstomp/parser", "dependencies/webstomp/stomp-config", "dependencies/webstomp/stomp-headers", "dependencies/webstomp/stomp-subscription", "dependencies/webstomp/i-transaction", "dependencies/webstomp/types", "dependencies/webstomp/versions", "dependencies/webstomp/web-socket-state", "dependencies/webstomp/compatibility/compat-client", "dependencies/webstomp/compatibility/stomp"], function (exports_33, context_33) {
     "use strict";
-    var __moduleName = context_32 && context_32.id;
+    var __moduleName = context_33 && context_33.id;
     function exportStar_1(m) {
         var exports = {};
         for (var n in m) {
             if (n !== "default") exports[n] = m[n];
         }
-        exports_32(exports);
+        exports_33(exports);
     }
     return {
         setters: [
@@ -2822,6 +2891,12 @@ System.register("dependencies/webstomp/index", ["dependencies/webstomp/client", 
             },
             function (frame_impl_2_1) {
                 exportStar_1(frame_impl_2_1);
+            },
+            function (i_frame_1_1) {
+                exportStar_1(i_frame_1_1);
+            },
+            function (i_message_1_1) {
+                exportStar_1(i_message_1_1);
             },
             function (parser_2_1) {
                 exportStar_1(parser_2_1);
@@ -2834,6 +2909,12 @@ System.register("dependencies/webstomp/index", ["dependencies/webstomp/client", 
             },
             function (stomp_subscription_1_1) {
                 exportStar_1(stomp_subscription_1_1);
+            },
+            function (i_transaction_1_1) {
+                exportStar_1(i_transaction_1_1);
+            },
+            function (types_1_1) {
+                exportStar_1(types_1_1);
             },
             function (versions_4_1) {
                 exportStar_1(versions_4_1);

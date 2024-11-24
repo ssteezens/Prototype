@@ -26,7 +26,6 @@
                 z-index: 10;
                 bottom: 5px;
                 right: 10px;
-                /* display:inline-block; */
                 user-select: none;
             }
             #Buttons {
@@ -46,6 +45,14 @@
                 background-color: white;
                 box-shadow: -7px 1px 7px grey;
             }
+            #GridOverlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
 
             .tool-selection {
                 border: 1px solid black;
@@ -60,16 +67,42 @@
                 padding:5px;
                 margin:4px;
             }
+            .button-divider {
+                display: inline-block;
+                height: 10px;
+                width: 1px;
+                margin-top:5px;
+                background-color: black;
+            }
+            .grid-line-x {
+                display: block;
+                position: absolute;
+                background-color: #ccc;
+                height: 1px;
+                width: 100%;
+                z-index: 100;
+            }
+            .grid-line-y {
+                display: block;
+                position: absolute;
+                background-color: #ccc;
+                height: 100%;
+                width: 1px;
+                z-index: 100;
+            }
         </style>
     </head>
     <body>
         <!-- Main Drawing Canvas -->
         <canvas id="TheCanvas">
         </canvas>
+        <div id="GridOverlay"></div>
         <!-- Info Display-->
         <p id="InfoDisplay">X: 0 Y: 0</p>
         <!-- Canvas Control Buttons -->
         <div id="Buttons">
+            <button id="GridLinesButton">Grid Lines</button>
+            <div class="button-divider"></div>
             <button id="UndoButton">Undo</button>
             <button id="RedoButton">Redo</button>
             <button id="SaveButton">Save</button>
@@ -84,7 +117,7 @@
         </div>
     </body>
     <foot>
-        <script type="text/javascript" src="stomp.js"></script>
+        <!-- <script type="text/javascript" src="stomp.js"></script> -->
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.20.13/system.js"></script>
         <script>
             System.import('./bundle.js')

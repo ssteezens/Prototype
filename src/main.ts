@@ -4,9 +4,9 @@ import { Receiver } from "./Receiver";
 
 var prototypeCanvas = new PrototypeCanvas();
 var draggableElements = document.getElementsByClassName('draggable');
-var receiver = new Receiver();
+// var receiver = new Receiver();
 
-receiver.connect();
+// receiver.connect();
 
 for(var i = 0; i < draggableElements.length; i++){
     var element = draggableElements[i] as HTMLElement;

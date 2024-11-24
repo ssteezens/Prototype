@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "watch-ts": "tsc -w",
+    "serve": "http-server .",
+    "dev": "concurrently \"npm run watch-ts\" \"npm run serve\""
+  },
+  "dependencies": {
+    "systemjs": "^6.15.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.7.2"
+  }
+}

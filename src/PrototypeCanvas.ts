@@ -6,11 +6,14 @@ import { LineTool } from "./tools/LineTool";
 import { CanvasInstance } from "./CanvasInstance";
 import { TextTool } from "./tools/TextTool";
 import { Receiver } from "./Receiver";
+import { BlockTool } from "./tools/BlockTool";
+import { Line } from "./models/Line";
 
 export class PrototypeCanvas {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private canvasHistory: CanvasHistoryManager;
+    private gridLinesButton: HTMLButtonElement;
     private undoButton: HTMLButtonElement;
     private redoButton: HTMLButtonElement;
     private infoDisplay: HTMLParagraphElement;
@@ -22,6 +25,7 @@ export class PrototypeCanvas {
     private blockToolOption: HTMLButtonElement;
     private currentTool: ICanvasTool;
     private receiver: Receiver;
+    private gridVisible: boolean = false;
 
     /**
      * Default constructor.  Initializes the canvas and context.
@@ -49,6 +53,7 @@ export class PrototypeCanvas {
         document.addEventListener("keydown", this.keyboardDownEventHandler);
 
         // edit buttons
+        this.gridLinesButton = document.getElementById("GridLinesButton") as HTMLButtonElement;
         this.undoButton = document.getElementById("UndoButton") as HTMLButtonElement;
         this.redoButton = document.getElementById("RedoButton") as HTMLButtonElement;
         this.saveButton = document.getElementById("SaveButton") as HTMLButtonElement;
@@ -61,6 +66,7 @@ export class PrototypeCanvas {
         this.blockToolOption = document.getElementById("BlockToolOption") as HTMLButtonElement;
 
         // button event handlers
+        this.gridLinesButton.addEventListener("click", this.gridLinesButtonClickEventHandler);
         this.undoButton.addEventListener("click", this.undoButtonClickEventHandler);
         this.redoButton.addEventListener("click", this.redoButtonClickEventHandler);
         this.saveButton.addEventListener("click", this.saveButtonClickEventHandler);
@@ -68,6 +74,7 @@ export class PrototypeCanvas {
         this.lineToolOption.addEventListener("click", this.lineToolOptionClickEventHandler);
         this.rectangleToolOption.addEventListener("click", this.rectangleToolClickEventHandler);
         this.morphingPolygonToolOption.addEventListener("click", this.morphingRectangleToolClickEventHandler);
+        this.blockToolOption.addEventListener("click", this.blockToolOptionClickEventHandler);
     }
 
     /**
@@ -98,6 +105,10 @@ export class PrototypeCanvas {
         this.currentTool = new LineTool();
     }
 
+    private blockToolOptionClickEventHandler = (e: Event) => {
+        this.currentTool = new BlockTool();
+    }
+
     /**
      * Event handler for the key down event.  Manages keyboard shortcuts
      */
@@ -120,6 +131,47 @@ export class PrototypeCanvas {
 
         window.location.href = image;
     };
+
+    private createGrid() {
+        const blockSize = 20;
+        const xLineCount = this.canvas.height / blockSize;
+        const yLineCount = this.canvas.width / blockSize;
+        const gridOverlay = document.getElementById('GridOverlay');
+
+        var currentYPoint = 0;
+        for(var i = 0; i < xLineCount; i++) {
+            var gridLine = document.createElement('div');
+
+            gridLine.classList.add('grid-line-x');
+            gridLine.style.top = `${currentYPoint}px`;
+
+            gridOverlay.appendChild(gridLine);
+
+            currentYPoint += blockSize;
+        }
+
+        var currentXPoint = 0;
+        for(var i = 0; i < yLineCount; i++) {
+            var gridLine = document.createElement('div');
+
+            gridLine.classList.add('grid-line-y');
+            gridLine.style.left = `${currentXPoint}px`;
+
+            gridOverlay.appendChild(gridLine);
+
+            currentXPoint += blockSize;
+        }
+    }
+
+    private gridLinesButtonClickEventHandler = (e: Event) => {
+        this.gridVisible = !this.gridVisible;
+        const gridOverlay = document.getElementById('GridOverlay');
+        gridOverlay.style.display = this.gridVisible ? 'block' : 'none';
+        
+        if (this.gridVisible && gridOverlay.children.length === 0) {
+            this.createGrid();
+        }
+    }
 
     /**
      * Event handler for the undo button. Calls the canvas history to undo the last action.

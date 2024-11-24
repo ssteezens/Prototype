@@ -2,10 +2,10 @@ import { CanvasInstance } from "../CanvasInstance";
 import { Point } from "../Point";
 
 export class BlockTool implements ICanvasTool {
-    private blockSize: number = 20;
+    private blockSize: number;
     private color: string;
     
-    constructor(blockSize: number, color: string = "red") {
+    constructor(blockSize: number = 20, color: string = "red") {
         this.blockSize = blockSize;
         this.color = color;
     }
