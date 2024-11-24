@@ -5,9 +5,6 @@ export class Line {
     private fromPoint: Point;
     private toPoint: Point;
 
-    /**
-     *
-     */
     constructor(point1: Point = new Point(), point2: Point = new Point()) {
         this.fromPoint = point1;
         this.toPoint = point2;

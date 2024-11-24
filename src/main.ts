@@ -1,4 +1,4 @@
-import { PrototypeCanvas } from "./ProtoTypeCanvas";
+import { PrototypeCanvas } from "./PrototypeCanvas";
 import { DraggableElement } from "./DraggableElement";
 import { Receiver } from "./Receiver";
 

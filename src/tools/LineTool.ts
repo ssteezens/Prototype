@@ -1,6 +1,6 @@
 import { Point } from "../Point";
 import { CanvasInstance } from "../CanvasInstance";
-import { Line } from "../Models/Line";
+import { Line } from "../models/Line";
 
 export class LineTool implements ICanvasTool {
     private fromPoint: Point;

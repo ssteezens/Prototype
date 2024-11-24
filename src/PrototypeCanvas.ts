@@ -19,6 +19,7 @@ export class PrototypeCanvas {
     private rectangleToolOption: HTMLButtonElement;
     private textToolOption: HTMLButtonElement;
     private lineToolOption: HTMLButtonElement;
+    private blockToolOption: HTMLButtonElement;
     private currentTool: ICanvasTool;
     private receiver: Receiver;
 
@@ -57,6 +58,7 @@ export class PrototypeCanvas {
         this.lineToolOption = document.getElementById("LineToolOption") as HTMLButtonElement;
         this.rectangleToolOption = document.getElementById("RectangleToolOption") as HTMLButtonElement;
         this.morphingPolygonToolOption = document.getElementById("MorphingPolygonToolOption") as HTMLButtonElement;
+        this.blockToolOption = document.getElementById("BlockToolOption") as HTMLButtonElement;
 
         // button event handlers
         this.undoButton.addEventListener("click", this.undoButtonClickEventHandler);

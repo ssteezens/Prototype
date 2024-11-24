@@ -2,5 +2,6 @@ enum DrawingModes {
     MorphingPolygon,
     Rectangle,
     Text,
-    Line
+    Line,
+    Block
 }
